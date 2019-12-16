@@ -66,7 +66,7 @@ fit.norm <- fitdist(d$math, "norm")
 fit.weibull <- fitdist(d$math, "weibull")
 
 plot(fit.weibull)
-wbpboot <- bootdist(fit.weibull)
+#wbpboot <- bootdist(fit.weibull)
 
 bscale <- wbpboot$estim$scale
 bshape <- wbpboot$estim$shape
@@ -97,4 +97,4 @@ ggplot(data = plot_data, aes(x = xr)) +
 co <- cor(select(d, math, reading, writing))
 mco <- melt(co)
 
-ggplot(data = mco, aes(x = Var1, y = Var2, fill = value)) + geom_tile() + geom_text(aes(Var1, Var2, label =signif(value, 3)))
+ggplot(data = mco, aes(x = Var1, y = Var2, fill = value)) + geom_tile() + geom_text(aes(Var1, Var2, label =signif(value, 2)))
