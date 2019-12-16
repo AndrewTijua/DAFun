@@ -11,11 +11,19 @@ library(Hmisc)
 library(doFuture)
 library(e1071)
 library(ggmosaic)
+library(ggrepel)
+library(corrplot)
+library(ggcorrplot)
+library(reshape2)
 
 registerDoFuture()
 plan(multiprocess, workers = availableCores() - 1)
 
 options(datatable.fread.datatable = FALSE)
+
+
+scale_fill_continuous <- scale_fill_viridis_c
+scale_colour_continuous <- scale_colour_viridis_c
 
 scale_fill_discrete <- scale_fill_viridis_d
 scale_colour_discrete <- scale_colour_viridis_d
@@ -83,7 +91,10 @@ mde_y <- dweibull(mde, shape = esshape, scale = esscale)
 ggplot(data = plot_data, aes(x = xr)) +
   geom_ribbon(aes(ymin = pdflwr, ymax = pdfupr), alpha = 0.5) +
   geom_histogram(data = d, aes(math, stat(density)), alpha = 0.3, color = 'black', binwidth = 5) +
-  geom_line(aes(y = espdf), color = 'red', size = 1.5) +
-  geom_point(aes(x = mde, y = mde_y), size = 5) + geom_text((aes(x = mde, y = mde_y)))
+  geom_line(aes(y = espdf), color = 'red', size = 1.5)
 
 
+co <- cor(select(d, math, reading, writing))
+mco <- melt(co)
+
+ggplot(data = mco, aes(x = Var1, y = Var2, fill = value)) + geom_tile() + geom_text(aes(Var1, Var2, label =signif(value, 3)))
