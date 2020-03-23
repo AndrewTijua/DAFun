@@ -35,13 +35,13 @@ stan_data <-
 
 hfr_model <- stan_model(file = "hier_bin.stan")
 
-# hfr_model_samples <- sampling(
-#   hfr_model,
-#   data = stan_data,
-#   chains = 7,
-#   control = list(adapt_delta = 0.9),
-#   iter = 40000
-# )
+hfr_model_samples <- sampling(
+  hfr_model,
+  data = stan_data,
+  chains = 7,
+  control = list(adapt_delta = 0.9),
+  iter = 4000
+)
 
 hfr_model_samples
 
@@ -61,7 +61,10 @@ names(ggfrlong) <- c("model", "posterior.predictive")
 histplots <- ggplot(data = ggfrlong) +
   theme_minimal() +
   geom_histogram(aes(x = posterior.predictive, color = model, fill = model), position = "identity", alpha = 0.3, binwidth = 1) +
-  scale_color_viridis(discrete=TRUE) + scale_fill_viridis(discrete=TRUE) + coord_cartesian(xlim = c(0,100)) + labs(title = "Histogram for Low-Data", y = "Occurence in 280,000 draws", x = "Failures in 100,000 drive days")
+  scale_color_viridis(discrete=TRUE) +
+  scale_fill_viridis(discrete=TRUE) +
+  coord_cartesian(xlim = c(0,100)) +
+  labs(title = "Histogram for Low-Data", y = "Occurence in 280,000 draws", x = "Failures in 100,000 drive days")
 histplots
 
 
@@ -84,3 +87,28 @@ histplots <- ggplot(data = ggfrlong) +
   labs(title = "Histogram for High-Data", y = "Occurence in 280,000 draws", x = "Failures in 100,000 drive days")
 histplots
 
+
+
+#####
+stan_data_fe <-
+  list(
+    y = q4_2019_ls$failures,
+    N = nrow(q4_2019_ls),
+    P = ncol(q4_2019_matrix),
+    X = q4_2019_matrix,
+    days = q4_2019_ls$days,
+    daycount = 1e6
+  )
+
+fe_model <- stan_model(file = "main.stan")
+
+fe_model_samples <- sampling(
+  fe_model,
+  data = stan_data_fe,
+  chains = 7,
+  control = list(adapt_delta = 0.9),
+  iter = 6000
+)
+
+fe_model_samples
+#####
